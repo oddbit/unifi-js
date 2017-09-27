@@ -117,6 +117,16 @@ export class UnifiController {
         return this.request(`/api/s/${this._siteName}/stat/voucher`, body);
     }
 
+    async getVouchers(timestamp?: number) {
+        const body = {} as any;
+
+        if (timestamp != null) {
+            body.create_time = timestamp;    
+        }
+
+        return this.request(`/api/s/${this._siteName}/stat/voucher`, body);
+    }
+
     // ------------------------------------------------------------------------
 
     private async request(uri:string, body?: any) {
