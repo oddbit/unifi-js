@@ -1,0 +1,20 @@
+
+language: node_js
+
+node_js:
+  - "latest"
+
+cache:
+  - node_modules
+
+branches:
+  only:
+  - master
+
+install:
+  - npm install
+
+deploy:
+  provider: npm
+  email: $EMAIL
+  api_key: $NPM_AUTH_TOKEN
