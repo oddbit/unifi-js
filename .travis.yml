@@ -18,7 +18,7 @@ before_install:
 install:
   - npm install
 
-deploy:
-  provider: npm
-  email: $EMAIL
-  api_key: $NPM_AUTH_TOKEN
+script:
+  - echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > ~/.npmrc
+  - npm config set @oddbit:registry https://registry.npmjs.org/
+  - npm publish --access=public
