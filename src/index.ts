@@ -134,6 +134,13 @@ export class UnifiController {
         });
     }
 
+    async upgradeExternal(ap: string, firmwareUrl: string) {
+        return this.request(`/api/s/${this._siteName}/cmd/devmgr/upgrade-external`, {
+            mac: ap,
+            url: firmwareUrl
+        });
+    }
+
     // ------------------------------------------------------------------------
 
     private async request(uri:string, body?: any) {
