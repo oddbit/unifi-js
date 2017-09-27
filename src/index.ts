@@ -3,18 +3,25 @@ import * as rp from "request-promise";
 import * as tough from "tough-cookie";
 import * as cookieParser from "set-cookie-parser"; 
 
-export interface UnifiControllerConfig {
+export interface NetworkRestrictionOpts {
+    up?: number,
+    down?: number,
+    bytes?: number
+}
+
+export interface ControllerConfig {
     host: string,
     port?: number,
     isSelfSigned?: boolean,
     siteName?: string
 }
 
-export interface UnifiAuthClientOpts {
-    minutes?: number,
-    up?: number,
-    down?: number,
-    bytes?: number
+export interface AuthClientOpts extends NetworkRestrictionOpts {
+    minutes?: number
+}
+
+export interface VoucherOpts extends NetworkRestrictionOpts {
+    note?: string
 }
 
 export class UnifiController {
@@ -25,7 +32,7 @@ export class UnifiController {
     private _isSelfSigned: boolean;
     private _siteName: string;
 
-    constructor(config: UnifiControllerConfig) {
+    constructor(config: ControllerConfig) {
         this._cookieJar = rp.jar();
         this._isLoggedIn = false;
         this._isSelfSigned = !!config.isSelfSigned;
@@ -39,7 +46,7 @@ export class UnifiController {
 
     async login(username: string, password: string) {
         if (this._isLoggedIn) {
-            await this.logout;
+            await this.logout();
         }
 
         return this.request("/api/login", {
@@ -56,12 +63,12 @@ export class UnifiController {
         return this.request("/api/logout");
     }
 
-    async authenticateClient(mac: string, ap: string, opts?: UnifiAuthClientOpts) {
+    async authenticateClient(mac: string, ap: string, opts?: AuthClientOpts) {
         const defaultOpts = {
             minutes: 60 * 24
         }
 
-        // Over-write values from left to right
+        // Overwrite values from left to right
         const body = Object.assign(defaultOpts, opts, {
             cmd: "authorize-guest",
             mac: mac,
@@ -70,6 +77,27 @@ export class UnifiController {
 
         return this.request(`/api/s/${this._siteName}/cmd/stamgr`, body);
     }
+
+    async createVouchers(quantity: number, minutes: number, opts?: VoucherOpts) {
+        if (quantity < 1) {
+            return;
+        }
+
+        if (minutes < 1) {
+            minutes = 1;
+        }
+
+        // Overwrite values from left to right
+        const body = Object.assign(opts, {
+            cmd: "create-voucher",
+            expire: minutes,
+            n: quantity
+        });
+
+        return this.request(`/api/s/${this._siteName}/stat/voucher`, body);
+    }
+
+    // ------------------------------------------------------------------------
 
     private async request(uri:string, body?: any) {
         const opts = {
