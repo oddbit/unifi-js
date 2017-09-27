@@ -78,6 +78,13 @@ export class UnifiController {
         return this.request(`/api/s/${this._siteName}/cmd/stamgr`, body);
     }
 
+    async reconnectClient(mac: string) {
+        return this.request(`/api/s/${this._siteName}/cmd/stamgr`, {
+            cmd: "kick-sta",
+            mac: mac       
+        });
+    }
+
     async createVouchers(quantity: number, minutes: number, opts?: VoucherOpts) {
         if (quantity < 1) {
             return;
