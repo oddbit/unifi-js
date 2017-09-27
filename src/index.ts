@@ -63,7 +63,7 @@ export class UnifiController {
         return this.request("/api/logout");
     }
 
-    async authenticateClient(mac: string, ap: string, opts?: AuthClientOpts) {
+    async authorizeClient(mac: string, ap: string, opts?: AuthClientOpts) {
         const defaultOpts = {
             minutes: 60 * 24
         }
