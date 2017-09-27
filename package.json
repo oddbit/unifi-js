@@ -1,14 +1,12 @@
 {
   "name": "@oddbit/unifi",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Unifi API client library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepublish": "npm run build",
-    "postinstall": "npm run build",
-    "watch": "$(npm bin)/tsc -w -p .",
-    "build": "$(npm bin)/tsc -p .",
+    "watch": "tsc -w -p .",
+    "build": "tsc -p .",
     "test": "echo \"Warning: no test specified\" && exit 0"
   },
   "repository": {
@@ -28,13 +26,13 @@
   "devDependencies": {
     "@types/request-promise": "^4.1.38",
     "@types/set-cookie-parser": "0.0.2",
-    "@types/tough-cookie": "^2.3.1"
+    "@types/tough-cookie": "^2.3.1",
+    "typescript": "^2.5.3"  
   },
   "dependencies": {
     "request": "^2.82.0",
     "request-promise": "^4.2.2",
     "set-cookie-parser": "^2.0.0",
-    "tough-cookie": "^2.3.3",
-    "typescript": "^2.5.3"    
+    "tough-cookie": "^2.3.3"  
   }
 }
