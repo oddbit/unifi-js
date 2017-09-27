@@ -2,14 +2,18 @@
 language: node_js
 
 node_js:
-  - "latest"
+  - "node"
 
 cache:
   - node_modules
 
 branches:
   only:
-  - master
+    - master
+
+before_install:
+  - npm i -g makeshift
+  - makeshift -s @oddbit -r https://registry.npmjs.org
 
 install:
   - npm install
