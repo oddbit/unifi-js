@@ -8,7 +8,8 @@
     "prepublish": "npm run build",
     "postinstall": "npm run build",
     "watch": "$(npm bin)/tsc -w -p .",
-    "build": "$(npm bin)/tsc -p ."
+    "build": "$(npm bin)/tsc -p .",
+    "test": "echo \"Warning: no test specified\" && exit 0"
   },
   "repository": {
     "type": "git",

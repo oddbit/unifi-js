@@ -12,13 +12,11 @@ branches:
     - master
 
 before_install:
-  - npm i -g makeshift
-  - makeshift -s @oddbit -r https://registry.npmjs.org
+  - echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > ~/.npmrc
+  - npm config set @oddbit:registry https://registry.npmjs.org/
 
 install:
   - npm install
 
 script:
-  - echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > ~/.npmrc
-  - npm config set @oddbit:registry https://registry.npmjs.org/
   - npm publish --access=public
