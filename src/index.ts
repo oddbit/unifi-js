@@ -85,6 +85,13 @@ export class UnifiController {
         });
     }
 
+    async blockClient(mac: string) {
+        return this.request(`/api/s/${this._siteName}/cmd/stamgr`, {
+            cmd: "block-sta",
+            mac: mac       
+        });
+    }
+
     async createVouchers(quantity: number, minutes: number, opts?: VoucherOpts) {
         if (quantity < 1) {
             return;
