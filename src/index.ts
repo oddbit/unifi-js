@@ -20,7 +20,7 @@ export interface AuthClientOpts extends NetworkRestrictionOpts {
     minutes?: number
 }
 
-export interface VoucherOpts extends NetworkRestrictionOpts {
+export interface CreateVoucherOpts extends NetworkRestrictionOpts {
     note?: string
 }
 
@@ -92,7 +92,7 @@ export class UnifiController {
         });
     }
 
-    async createVouchers(quantity: number, minutes: number, opts?: VoucherOpts) {
+    async createVouchers(quantity: number, minutes: number, opts?: CreateVoucherOpts) {
         if (quantity < 1) {
             return;
         }
