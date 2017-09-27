@@ -19,6 +19,10 @@ install:
   - npm install -g typescript
   - npm install
 
-script:
+before_script:
   - npm run build
+  - ls dist
+  
+script:
   - npm publish --access=public
+
