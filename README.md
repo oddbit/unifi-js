@@ -1,4 +1,5 @@
-# @oddbit/unifi 
+# @oddbit/unifi &dash; [![npm version](https://img.shields.io/npm/v/@oddbit/unifi.svg)](https://www.npmjs.com/package/@oddbit/unifi) ![npm](https://img.shields.io/npm/l/@oddbit/unifi.svg)
+
 An easy to use and Typscript friendly API client for managing UBNT UniFi accesspoints.
 
 The UniFi API is not very well documented, the main source of reference is [this shell script](https://dl.ubnt.com/unifi/5.4.16/unifi_sh_api), so
