@@ -92,6 +92,12 @@ export class UnifiController {
         });
     }
 
+    async backup() {
+        return this.request(`/api/s/${this._siteName}/cmd/backup`, {
+            cmd: "backup"  
+        });
+    }
+
     async createVouchers(quantity: number, minutes: number, opts?: CreateVoucherOpts) {
         if (quantity < 1) {
             return;
