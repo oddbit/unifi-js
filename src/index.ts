@@ -85,6 +85,12 @@ export class UnifiController {
 
     /**
      * Reconnect a previously authorized client
+    async unauthorizeClient(mac: string) {
+        return this.request(`/api/s/${this._siteName}/cmd/stamgr`, {
+            cmd: "unauthorize-guest",
+            mac: mac
+        });
+    }
      *
      * @param mac MAC address of the clien device to reconnect
      * @throws HTTP 400 Exception if the MAC address is not known to the controller
