@@ -1,7 +1,7 @@
 import {CookieJar, Cookie} from "request";
 import * as rp from "request-promise";
 import * as tough from "tough-cookie";
-import * as cookieParser from "set-cookie-parser"; 
+import * as cookieParser from "set-cookie-parser";
 import * as unifiTypes from "./types";
 
 
@@ -26,6 +26,12 @@ export class UnifiController {
         this._controllerUrl = `https://${host}:${port}`
     }
 
+    /**
+     *
+     * @param username Admin username (provided user needs administrator rights)
+     * @param password Password
+     * @returns A promise with an empty array on success
+     */
     async login(username: string, password: string): Promise<any[]> {
         if (this._isLoggedIn) {
             await this.logout();
@@ -42,6 +48,11 @@ export class UnifiController {
         });
     }
 
+    /**
+     * Logout from the UniFi controller.
+     *
+     * @returns A promise with an empty array on success
+     */
     async logout(): Promise<any[]> {
         if (!this._isLoggedIn) {
             return Promise.resolve([]);
@@ -50,6 +61,13 @@ export class UnifiController {
         return this.request("/api/logout");
     }
 
+    /**
+     * Authorize a client device to connect through the hotspot.
+     *
+     * @param mac MAC address of the clien device
+     * @param ap The access point MAC to which the client device connected
+     * @param [opts] Auth/connection options (see `AuthClientOpts`)
+     */
     async authorizeClient(mac: string, ap: string, opts?: unifiTypes.AuthClientOpts): Promise<unifiTypes.ClientAuthResponse[]> {
         const defaultOpts = {
             minutes: 60 * 24
@@ -59,26 +77,42 @@ export class UnifiController {
         const body = Object.assign(defaultOpts, opts, {
             cmd: "authorize-guest",
             mac: mac,
-            ap_mac: ap            
+            ap_mac: ap
         });
 
         return this.request(`/api/s/${this._siteName}/cmd/stamgr`, body);
     }
 
+    /**
+     * Reconnect a previously authorized client
+     *
+     * @param mac MAC address of the clien device to reconnect
+     * @throws HTTP 400 Exception if the MAC address is not known to the controller
+     */
     async reconnectClient(mac: string): Promise<any[]> {
         return this.request(`/api/s/${this._siteName}/cmd/stamgr`, {
             cmd: "kick-sta",
-            mac: mac       
+            mac: mac
         });
     }
 
+    /**
+     * Block a client device
+     *
+     * @param mac MAC of client device to block
+     */
     async blockClient(mac: string): Promise<unifiTypes.ClientBlockedResponse[]> {
         return this.request(`/api/s/${this._siteName}/cmd/stamgr`, {
             cmd: "block-sta",
-            mac: mac       
+            mac: mac
         });
     }
 
+    /**
+     * Unblock a client device
+     *
+     * @param mac MAC of client device to block
+     */
     async unblockClient(mac: string): Promise<unifiTypes.ClientBlockedResponse[]> {
         return this.request(`/api/s/${this._siteName}/cmd/stamgr`, {
             cmd: "unblock-sta",
@@ -86,12 +120,23 @@ export class UnifiController {
         });
     }
 
+    /**
+     * NOT TESTED !!!!
+     */
     async backup() {
         return this.request(`/api/s/${this._siteName}/cmd/backup`, {
-            cmd: "backup"  
+            cmd: "backup"
         });
     }
 
+    /**
+     * Create multi or single use voucher access tokens.
+     *
+     * @param quantity The number of vouchers to create
+     * @param minutes How many minutes of uptime that will be included
+     * @param [opts] Additional options
+     * @returns A promise with a timestamp for when the vouchers were created
+     */
     async createVouchers(quantity: number, minutes: number, opts?: unifiTypes.CreateVoucherOpts): Promise<unifiTypes.CreateVoucherResponse[]> {
         if (quantity < 1) {
             return Promise.resolve([]);
@@ -115,16 +160,29 @@ export class UnifiController {
         return this.request(`/api/s/${this._siteName}/cmd/hotspot`, body);
     }
 
+    /**
+     * Get all vouchers. The result set can be limited by a timestamp. The provided timestamp must match the
+     * exact same timestamp on which the vouchers were created.
+     *
+     * @param timestamp The **exact** timestamp on which the desired vouchers were created on
+     * @returns A promise with an array of `Voucher`
+     */
     async getVouchers(timestamp?: number): Promise<unifiTypes.Voucher[]> {
         const body = {} as any;
 
         if (timestamp != null) {
-            body.create_time = timestamp;    
+            body.create_time = timestamp;
         }
 
         return this.request(`/api/s/${this._siteName}/stat/voucher`, body);
     }
 
+    /**
+     * Delete a voucher.
+     *
+     * @param voucherId The `_id` of the created `Voucher`
+     * @returns Always returns a Promise with an empty array
+     */
     async deleteVoucher(voucherId: string): Promise<any[]> {
         return this.request(`/api/s/${this._siteName}/cmd/hotspot`, {
             cmd: "delete-voucher",
@@ -132,6 +190,9 @@ export class UnifiController {
         });
     }
 
+    /**
+     * NOT TESTED !!!!
+     */
     async upgradeExternal(ap: string, firmwareUrl: string): Promise<any[]> {
         return this.request(`/api/s/${this._siteName}/cmd/devmgr/upgrade-external`, {
             mac: ap,
@@ -162,7 +223,7 @@ export class UnifiController {
             body: body
         };
 
-        const nodeTslRejectUnauthorized = process.env.NODE_TLS_REJECT_UNAUTHORIZED; 
+        const nodeTslRejectUnauthorized = process.env.NODE_TLS_REJECT_UNAUTHORIZED;
         if (this._isSelfSigned) {
             // Ignore self signed certificate warnings
             process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -171,7 +232,7 @@ export class UnifiController {
         return rp(opts)
             .then((response) => {
                 cookieParser.parse(response).forEach(cookie => {
-                    this._cookieJar.setCookie(new tough.Cookie(cookie) as any, this._controllerUrl);            
+                    this._cookieJar.setCookie(new tough.Cookie(cookie) as any, this._controllerUrl);
                 });
 
                 return (response.body && response.body.data) || [];
