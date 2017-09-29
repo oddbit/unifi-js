@@ -44,7 +44,7 @@ export class UnifiController {
 
     async logout(): Promise<any[]> {
         if (!this._isLoggedIn) {
-            return;
+            return Promise.resolve([]);
         }
 
         return this.request("/api/logout");
@@ -94,7 +94,7 @@ export class UnifiController {
 
     async createVouchers(quantity: number, minutes: number, opts?: unifiTypes.CreateVoucherOpts): Promise<any[]> {
         if (quantity < 1) {
-            return;
+            return Promise.resolve([]);
         }
 
         if (minutes < 1) {
