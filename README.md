@@ -8,16 +8,20 @@ please give feedback if anything is amiss.
 ## Actions
 The following actions are supported.
 
-- Login 
+- Login
 - Logout
 - Authorize client
+- Unauthorize client
 - Reconnect client
 - Block client
+- Unblock client
 - Backup
 - Create vouchers
 - Get vouchers
 - Delete vouchers
 - Upgrade firmware
+- List access points with device info
+- Get UniFi controller system info
 
 ## How to use it
 

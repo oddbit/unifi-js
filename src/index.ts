@@ -30,7 +30,7 @@ export class UnifiController {
      *
      * @param username Admin username (provided user needs administrator rights)
      * @param password Password
-     * @returns A promise with an empty array on success
+     * @returns Always returns a Promise with an empty array
      */
     async login(username: string, password: string): Promise<any[]> {
         if (this._isLoggedIn) {
@@ -51,7 +51,7 @@ export class UnifiController {
     /**
      * Logout from the UniFi controller.
      *
-     * @returns A promise with an empty array on success
+     * @returns Always returns a Promise with an empty array
      */
     async logout(): Promise<any[]> {
         if (!this._isLoggedIn) {
@@ -64,7 +64,7 @@ export class UnifiController {
     /**
      * Authorize a client device to connect through the hotspot.
      *
-     * @param mac MAC address of the clien device
+     * @param mac MAC address of the client device
      * @param ap The access point MAC to which the client device connected
      * @param [opts] Auth/connection options (see `AuthClientOpts`)
      */
@@ -84,15 +84,22 @@ export class UnifiController {
     }
 
     /**
-     * Reconnect a previously authorized client
+     * Unauthorize a client device
+     *
+     * @param mac MAC address of the client device
+     * @returns Always returns a Promise with an empty array
+     */
     async unauthorizeClient(mac: string) {
         return this.request(`/api/s/${this._siteName}/cmd/stamgr`, {
             cmd: "unauthorize-guest",
             mac: mac
         });
     }
+
+    /**
+     * Reconnect a client device
      *
-     * @param mac MAC address of the clien device to reconnect
+     * @param mac MAC address of the client device to reconnect
      * @throws HTTP 400 Exception if the MAC address is not known to the controller
      */
     async reconnectClient(mac: string): Promise<any[]> {
