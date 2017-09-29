@@ -89,7 +89,7 @@ export class UnifiController {
      * @param mac MAC address of the client device
      * @returns Always returns a Promise with an empty array
      */
-    async unauthorizeClient(mac: string) {
+    async unauthorizeClient(mac: string): Promise<any[]> {
         return this.request(`/api/s/${this._siteName}/cmd/stamgr`, {
             cmd: "unauthorize-guest",
             mac: mac
