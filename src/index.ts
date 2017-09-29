@@ -125,10 +125,10 @@ export class UnifiController {
         return this.request(`/api/s/${this._siteName}/stat/voucher`, body);
     }
 
-    async deleteVoucher(voucher: string): Promise<any[]> {
+    async deleteVoucher(voucherId: string): Promise<any[]> {
         return this.request(`/api/s/${this._siteName}/cmd/hotspot`, {
             cmd: "delete-voucher",
-            _id: voucher
+            _id: voucherId
         });
     }
 
