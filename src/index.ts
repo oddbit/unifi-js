@@ -2,6 +2,8 @@ import {CookieJar, Cookie} from "request";
 import * as rp from "request-promise";
 import * as tough from "tough-cookie";
 import * as cookieParser from "set-cookie-parser"; 
+import * as unifiTypes from "./types";
+
 
 export interface NetworkRestrictionOpts {
     up?: number,
@@ -145,6 +147,10 @@ export class UnifiController {
             url: firmwareUrl
         });
     }
+
+    async listDevices(ap?: string): Promise<unifiTypes.Device[]> { 
+        return this.request(`/api/s/${this._siteName}/stat/device/${ap || ""}`); 
+    } 
 
     // ------------------------------------------------------------------------
 
