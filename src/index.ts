@@ -140,22 +140,14 @@ export class UnifiController {
     }
 
     /**
-     * List and all access point device data.
+     * Get device info for one or all access points. Specifying an access point's MAC will limit
+     * the result to only that AP.
      *
-     * @returns A promise with comprehensive list of device info for all access points
+     * @param [ap] Access point MAC
+     * @returns A promise with an array of comprehensive device info
      */
-    async listDevices(): Promise<unifiTypes.Device[]> {
-        return this.request(`/api/s/${this._siteName}/stat/device/`);
-    }
-
-    /**
-     * Get comprehensive data about an access point.
-     *
-     * @param ap Access point MAC
-     * @returns A promise with a comprehensive list of device info for the specified access point
-     */
-    async getDeviceInfo(ap: string): Promise<unifiTypes.Device[]> {
-        return this.request(`/api/s/${this._siteName}/stat/device/${ap}`);
+    async getDevices(ap?: string): Promise<unifiTypes.Device[]> {
+        return this.request(`/api/s/${this._siteName}/stat/device/${ap || ""}`);
     }
 
     // ------------------------------------------------------------------------
