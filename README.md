@@ -13,11 +13,12 @@ The following actions are supported.
 - Authorize client
 - Unauthorize client
 - Reconnect client
+- List clients
 - Block client
 - Unblock client
 - Backup
 - Create vouchers
-- Get vouchers
+- List vouchers
 - Delete vouchers
 - Upgrade firmware
 - List access points with device info

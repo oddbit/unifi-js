@@ -27,6 +27,7 @@ export class UnifiController {
     }
 
     /**
+     * Login to the UniFi controller
      *
      * @param username Admin username (provided user needs administrator rights)
      * @param password Password
