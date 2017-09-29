@@ -72,7 +72,7 @@ export class UnifiController {
         });
     }
 
-    async blockClient(mac: string): Promise<any> {
+    async blockClient(mac: string): Promise<unifiTypes.ClientBlockedResponse[]> {
         return this.request(`/api/s/${this._siteName}/cmd/stamgr`, {
             cmd: "block-sta",
             mac: mac       

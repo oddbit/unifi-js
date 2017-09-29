@@ -19,13 +19,19 @@ export interface CreateVoucherOpts extends NetworkRestrictionOpts {
     note?: string
 }
 
+export interface ClientBlockedResponse  {
+    blocked: boolean,
+    mac: string,
+    site_id: string
+}
+
 export interface ClientAuthResponse {
     authorized_by: string,
     end: number,
     mac: string,
     site_id: string,
     start: number
-  }
+}
 
 export interface Uplink {
     full_duplex: boolean,
