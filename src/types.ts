@@ -24,6 +24,22 @@ export interface CreateVoucherResponse {
     create_time: number
 }
 
+export interface Voucher {
+    _id: string,
+    admin_name: string,
+    code: string,
+    create_time: number,
+    duration: number,
+    for_hotspot: boolean,
+    note: string,
+    qos_overwrite: boolean,
+    quota: number,
+    site_id: string,
+    status: string,
+    status_expires: number,
+    used: number
+  }
+
 export interface ClientBlockedResponse  {
     blocked: boolean,
     mac: string,

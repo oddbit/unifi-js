@@ -115,7 +115,7 @@ export class UnifiController {
         return this.request(`/api/s/${this._siteName}/cmd/hotspot`, body);
     }
 
-    async getVouchers(timestamp?: number): Promise<any[]> {
+    async getVouchers(timestamp?: number): Promise<unifiTypes.Voucher[]> {
         const body = {} as any;
 
         if (timestamp != null) {
