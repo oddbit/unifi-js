@@ -17,8 +17,6 @@ export interface RadioNg {
 }
 
 export interface Device                   {
-    _id: string,
-    _uptime: number,
     adopted: boolean,
     cfgversion: string,
     connect_request_ip: string,
