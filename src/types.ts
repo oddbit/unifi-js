@@ -1,3 +1,24 @@
+export interface NetworkRestrictionOpts {
+    up?: number,
+    down?: number,
+    bytes?: number
+}
+
+export interface ControllerConfig {
+    host: string,
+    port?: number,
+    isSelfSigned?: boolean,
+    siteName?: string
+}
+
+export interface AuthClientOpts extends NetworkRestrictionOpts {
+    minutes?: number
+}
+
+export interface CreateVoucherOpts extends NetworkRestrictionOpts {
+    note?: string
+}
+
 export interface ClientAuthResponse {
     authorized_by: string,
     end: number,

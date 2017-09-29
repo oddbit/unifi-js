@@ -5,26 +5,6 @@ import * as cookieParser from "set-cookie-parser";
 import * as unifiTypes from "./types";
 
 
-export interface NetworkRestrictionOpts {
-    up?: number,
-    down?: number,
-    bytes?: number
-}
-
-export interface ControllerConfig {
-    host: string,
-    port?: number,
-    isSelfSigned?: boolean,
-    siteName?: string
-}
-
-export interface AuthClientOpts extends NetworkRestrictionOpts {
-    minutes?: number
-}
-
-export interface CreateVoucherOpts extends NetworkRestrictionOpts {
-    note?: string
-}
 
 export class UnifiController {
 
@@ -34,7 +14,7 @@ export class UnifiController {
     private _isSelfSigned: boolean;
     private _siteName: string;
 
-    constructor(config: ControllerConfig) {
+    constructor(config: unifiTypes.ControllerConfig) {
         this._cookieJar = rp.jar();
         this._isLoggedIn = false;
         this._isSelfSigned = !!config.isSelfSigned;
@@ -70,7 +50,7 @@ export class UnifiController {
         return this.request("/api/logout");
     }
 
-    async authorizeClient(mac: string, ap: string, opts?: AuthClientOpts): Promise<unifiTypes.ClientAuthResponse> {
+    async authorizeClient(mac: string, ap: string, opts?: unifiTypes.AuthClientOpts): Promise<unifiTypes.ClientAuthResponse> {
         const defaultOpts = {
             minutes: 60 * 24
         }
@@ -105,7 +85,7 @@ export class UnifiController {
         });
     }
 
-    async createVouchers(quantity: number, minutes: number, opts?: CreateVoucherOpts): Promise<any> {
+    async createVouchers(quantity: number, minutes: number, opts?: unifiTypes.CreateVoucherOpts): Promise<any> {
         if (quantity < 1) {
             return;
         }
