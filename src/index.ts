@@ -112,7 +112,6 @@ export class UnifiController {
             n: quantity
         });
 
-        console.log(JSON.stringify(body));
         return this.request(`/api/s/${this._siteName}/cmd/hotspot`, body);
     }
 
