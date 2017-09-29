@@ -79,6 +79,13 @@ export class UnifiController {
         });
     }
 
+    async unblockClient(mac: string): Promise<unifiTypes.ClientBlockedResponse[]> {
+        return this.request(`/api/s/${this._siteName}/cmd/stamgr`, {
+            cmd: "unblock-sta",
+            mac: mac
+        });
+    }
+
     async backup() {
         return this.request(`/api/s/${this._siteName}/cmd/backup`, {
             cmd: "backup"  
