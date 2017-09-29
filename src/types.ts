@@ -24,6 +24,32 @@ export interface CreateVoucherResponse {
     create_time: number
 }
 
+export interface Client {
+    _id: string,
+    ap_mac: string,
+    authorized_by: string,
+    bytes: number,
+    channel: number,
+    duration: number,
+    end: number,
+    hostname: string,
+    ip: string,
+    is_returning: boolean,
+    mac: string,
+    name: string,
+    radio: string,
+    roam_count: number,
+    rx_bytes: number,
+    site_id: string,
+    start: number,
+    tx_bytes: number,
+    user_agent: string,
+    user_id: string,
+    voucher_code: string,
+    voucher_id: string
+}
+
+
 export interface SystemInfo {
     autobackup: boolean,
     build: string,

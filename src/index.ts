@@ -97,6 +97,24 @@ export class UnifiController {
     }
 
     /**
+     * List authorized client devices.
+     *
+     * @param [timeframe] The window of time (in seconds) to limit results by (default is 30 days)
+     * @param [from] Alternative start time from where to list devices (default is "now")
+     * @returns A promise with an array of `Client` devices
+     */
+    async getClients(timeframe?: number, from?: number): Promise<unifiTypes.Client[]> {
+        timeframe = timeframe || 60 * 60 * 24 * 30;
+        from = from || Math.round(Date.now() / 1000);
+
+        console.log(`timeframe = ${timeframe} from = ${from}`);
+        return this.request(`/api/s/${this._siteName}/stat/authorization`, {
+            start: timeframe,
+            end: from
+        });
+    }
+
+    /**
      * Reconnect a client device
      *
      * @param mac MAC address of the client device to reconnect
