@@ -92,7 +92,7 @@ export class UnifiController {
         });
     }
 
-    async createVouchers(quantity: number, minutes: number, opts?: unifiTypes.CreateVoucherOpts): Promise<any[]> {
+    async createVouchers(quantity: number, minutes: number, opts?: unifiTypes.CreateVoucherOpts): Promise<unifiTypes.CreateVoucherResponse[]> {
         if (quantity < 1) {
             return Promise.resolve([]);
         }
@@ -101,14 +101,19 @@ export class UnifiController {
             minutes = 1;
         }
 
+        const defaultOpts = {
+            quota: 1
+        }
+
         // Overwrite values from left to right
-        const body = Object.assign(opts, {
+        const body = Object.assign(defaultOpts, opts, {
             cmd: "create-voucher",
             expire: minutes,
             n: quantity
         });
 
-        return this.request(`/api/s/${this._siteName}/stat/voucher`, body);
+        console.log(JSON.stringify(body));
+        return this.request(`/api/s/${this._siteName}/cmd/hotspot`, body);
     }
 
     async getVouchers(timestamp?: number): Promise<any[]> {

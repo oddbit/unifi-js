@@ -16,7 +16,12 @@ export interface AuthClientOpts extends NetworkRestrictionOpts {
 }
 
 export interface CreateVoucherOpts extends NetworkRestrictionOpts {
-    note?: string
+    note?: string,
+    quota: number
+}
+
+export interface CreateVoucherResponse {
+    create_time: number
 }
 
 export interface ClientBlockedResponse  {
