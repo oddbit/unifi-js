@@ -140,9 +140,24 @@ export class UnifiController {
         });
     }
 
-    async listDevices(ap?: string): Promise<unifiTypes.Device[]> { 
-        return this.request(`/api/s/${this._siteName}/stat/device/${ap || ""}`); 
-    } 
+    /**
+     * List and all access point device data.
+     *
+     * @returns A promise with comprehensive list of device info for all access points
+     */
+    async listDevices(): Promise<unifiTypes.Device[]> {
+        return this.request(`/api/s/${this._siteName}/stat/device/`);
+    }
+
+    /**
+     * Get comprehensive data about an access point.
+     *
+     * @param ap Access point MAC
+     * @returns A promise with a comprehensive list of device info for the specified access point
+     */
+    async getDeviceInfo(ap: string): Promise<unifiTypes.Device[]> {
+        return this.request(`/api/s/${this._siteName}/stat/device/${ap}`);
+    }
 
     // ------------------------------------------------------------------------
 
