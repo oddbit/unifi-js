@@ -170,6 +170,8 @@ export class UnifiController {
                     this._cookieJar.setCookie(new tough.Cookie(cookie) as any, this._controllerUrl);            
                 });
 
+                return (response.body && response.body.data) || [];
+
             }).finally(() => {
                 // Restore the environment variable value
                 process.env.NODE_TLS_REJECT_UNAUTHORIZED = nodeTslRejectUnauthorized;
