@@ -14,8 +14,11 @@
     "url": "git+https://github.com/oddbit/unifi-js.git"
   },
   "keywords": [
+    "UBNT",
     "UniFi",
-    "Hotspot"
+    "Guest portal",
+    "Hotspot",
+    "Wifi"
   ],
   "author": "Dennis Alund <dennis.alund@gmail.com>",
   "license": "MIT",
