@@ -1,3 +1,11 @@
+export interface ClientAuthResponse {
+    authorized_by: string,
+    end: number,
+    mac: string,
+    site_id: string,
+    start: number
+  }
+
 export interface Uplink {
     full_duplex: boolean,
     ip: string,
