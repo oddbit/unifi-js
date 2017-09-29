@@ -59,7 +59,10 @@ export class UnifiController {
             return Promise.resolve([]);
         }
 
-        return this.request("/api/logout");
+        return this.request("/api/logout").then(response => {
+            this._isLoggedIn = false;
+            return response;
+        });
     }
 
     /**
