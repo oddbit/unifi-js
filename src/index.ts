@@ -44,7 +44,7 @@ export class UnifiController {
         this._controllerUrl = `https://${host}:${port}`
     }
 
-    async login(username: string, password: string) {
+    async login(username: string, password: string): Promise<any> {
         if (this._isLoggedIn) {
             await this.logout();
         }
@@ -55,7 +55,7 @@ export class UnifiController {
         });
     }
 
-    async logout() {
+    async logout(): Promise<any> {
         if (!this._isLoggedIn) {
             return;
         }
@@ -63,7 +63,7 @@ export class UnifiController {
         return this.request("/api/logout");
     }
 
-    async authorizeClient(mac: string, ap: string, opts?: AuthClientOpts) {
+    async authorizeClient(mac: string, ap: string, opts?: AuthClientOpts): Promise<any> {
         const defaultOpts = {
             minutes: 60 * 24
         }
@@ -78,14 +78,14 @@ export class UnifiController {
         return this.request(`/api/s/${this._siteName}/cmd/stamgr`, body);
     }
 
-    async reconnectClient(mac: string) {
+    async reconnectClient(mac: string): Promise<any> {
         return this.request(`/api/s/${this._siteName}/cmd/stamgr`, {
             cmd: "kick-sta",
             mac: mac       
         });
     }
 
-    async blockClient(mac: string) {
+    async blockClient(mac: string): Promise<any> {
         return this.request(`/api/s/${this._siteName}/cmd/stamgr`, {
             cmd: "block-sta",
             mac: mac       
@@ -98,7 +98,7 @@ export class UnifiController {
         });
     }
 
-    async createVouchers(quantity: number, minutes: number, opts?: CreateVoucherOpts) {
+    async createVouchers(quantity: number, minutes: number, opts?: CreateVoucherOpts): Promise<any> {
         if (quantity < 1) {
             return;
         }
@@ -117,7 +117,7 @@ export class UnifiController {
         return this.request(`/api/s/${this._siteName}/stat/voucher`, body);
     }
 
-    async getVouchers(timestamp?: number) {
+    async getVouchers(timestamp?: number): Promise<any> {
         const body = {} as any;
 
         if (timestamp != null) {
@@ -127,14 +127,14 @@ export class UnifiController {
         return this.request(`/api/s/${this._siteName}/stat/voucher`, body);
     }
 
-    async deleteVoucher(voucher: string) {
+    async deleteVoucher(voucher: string): Promise<any> {
         return this.request(`/api/s/${this._siteName}/cmd/hotspot`, {
             cmd: "delete-voucher",
             _id: voucher
         });
     }
 
-    async upgradeExternal(ap: string, firmwareUrl: string) {
+    async upgradeExternal(ap: string, firmwareUrl: string): Promise<any> {
         return this.request(`/api/s/${this._siteName}/cmd/devmgr/upgrade-external`, {
             mac: ap,
             url: firmwareUrl
@@ -143,7 +143,7 @@ export class UnifiController {
 
     // ------------------------------------------------------------------------
 
-    private async request(uri:string, body?: any) {
+    private request(uri:string, body?: any) {
         const opts = {
             method: "POST",
             uri: this._controllerUrl + uri,
