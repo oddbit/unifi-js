@@ -49,9 +49,14 @@ export class UnifiController {
             await this.logout();
         }
 
-        return this.request("/api/login", {
+        const body = {
             "username": username,
             "password": password
+        };
+
+        return this.request("/api/login", body).then(response => {
+            this._isLoggedIn = true;
+            return response;
         });
     }
 
