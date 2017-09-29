@@ -24,6 +24,30 @@ export interface CreateVoucherResponse {
     create_time: number
 }
 
+export interface SystemInfo {
+    autobackup: boolean,
+    build: string,
+    data_retention_days: number,
+    debug_device: string,
+    debug_mgmt: string,
+    debug_sdn: string,
+    debug_system: string,
+    google_maps_api_key: string,
+    hostname: string,
+    image_maps_use_google_engine: boolean,
+    inform_port: number,
+    ip_addrs: string[],
+    live_chat: string,
+    name: string,
+    override_inform_host: boolean,
+    timezone: string,
+    unifi_go_enabled: boolean,
+    update_available: boolean,
+    update_downloaded: boolean,
+    version: string
+  }
+
+
 export interface Voucher {
     _id: string,
     admin_name: string,

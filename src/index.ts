@@ -217,6 +217,15 @@ export class UnifiController {
         return this.request(`/api/s/${this._siteName}/stat/device/${ap || ""}`);
     }
 
+    /**
+     * Get controller system info
+     *
+     * @returns A promise with UniFi controller system information
+     */
+    async getSystemInfo(): Promise<unifiTypes.SystemInfo[]> {
+        return this.request(`/api/s/${this._siteName}/stat/sysinfo`);
+    }
+
     // ------------------------------------------------------------------------
 
     private request(uri:string, body?: any) {
