@@ -2,8 +2,10 @@
 
 An easy to use and Typscript friendly API client for managing UBNT UniFi accesspoints.
 
-The UniFi API is not very well documented, the main source of reference is [this shell script](https://dl.ubnt.com/unifi/5.4.16/unifi_sh_api), so
-please give feedback if anything is amiss.
+
+The UniFi API is officially not very well documented, the project started out from [this shell script](https://dl.ubnt.com/unifi/5.4.16/unifi_sh_api) but I've found that the source code of the PHP project
+[UniFi-API-browser](https://github.com/Art-of-WiFi/UniFi-API-browser) is the best API documentation
+at the moment. Thanks guys!
 
 ## Actions
 The following actions are supported.
