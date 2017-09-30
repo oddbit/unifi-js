@@ -31,9 +31,8 @@ export class UnifiController {
      *
      * @param username Admin username (provided user needs administrator rights)
      * @param password Password
-     * @returns Always returns a Promise with an empty array
      */
-    async login(username: string, password: string): Promise<any[]> {
+    async login(username: string, password: string) {
         if (this._isLoggedIn) {
             await this.logout();
         }
@@ -43,26 +42,20 @@ export class UnifiController {
             "password": password
         };
 
-        return this.request("/api/login", body).then(response => {
-            this._isLoggedIn = true;
-            return response;
-        });
+        await this.request("/api/login", body);
+        this._isLoggedIn = true;
     }
 
     /**
      * Logout from the UniFi controller.
-     *
-     * @returns Always returns a Promise with an empty array
      */
-    async logout(): Promise<any[]> {
+    async logout() {
         if (!this._isLoggedIn) {
-            return Promise.resolve([]);
+            return;
         }
 
-        return this.request("/api/logout").then(response => {
-            this._isLoggedIn = false;
-            return response;
-        });
+        await this.request("/api/logout");
+        this._isLoggedIn = false;
     }
 
     /**
@@ -71,8 +64,9 @@ export class UnifiController {
      * @param mac MAC address of the client device
      * @param ap The access point MAC to which the client device connected
      * @param [opts] Auth/connection options (see `AuthClientOpts`)
+     * @returns Authorized client data
      */
-    async authorizeClient(mac: string, ap: string, opts?: unifiTypes.AuthClientOpts): Promise<unifiTypes.ClientAuthResponse[]> {
+    async authorizeGuest(mac: string, ap: string, opts?: unifiTypes.AuthClientOpts): Promise<unifiTypes.ClientAuthResponse> {
         const defaultOpts = {
             minutes: 60 * 24
         }
@@ -84,50 +78,54 @@ export class UnifiController {
             ap_mac: ap
         });
 
-        return this.request(`/api/s/${this._siteName}/cmd/stamgr`, body);
+        const response = await this.request(`/api/s/${this._siteName}/cmd/stamgr`, body);
+        return response[0];
     }
 
     /**
      * Unauthorize a client device
      *
      * @param mac MAC address of the client device
-     * @returns Always returns a Promise with an empty array
      */
-    async unauthorizeClient(mac: string): Promise<any[]> {
-        return this.request(`/api/s/${this._siteName}/cmd/stamgr`, {
+    async unauthorizeGuest(mac: string) {
+        const body = {
             cmd: "unauthorize-guest",
             mac: mac
-        });
+        };
+
+        await this.request(`/api/s/${this._siteName}/cmd/stamgr`, body);
     }
 
     /**
-     * List authorized client devices.
+     * List known sessions during a certain period of time. Default is to show the last month's sessions.
      *
      * @param [timeframe] The window of time (in seconds) to limit results by (default is 30 days)
      * @param [from] Alternative start time from where to list devices (default is "now")
-     * @returns A promise with an array of `Client` devices
      */
-    async getClients(timeframe?: number, from?: number): Promise<unifiTypes.Client[]> {
+    async listSessions(timeframe?: number, from?: number): Promise<unifiTypes.Session[]> {
         timeframe = timeframe || 60 * 60 * 24 * 30;
         from = from || Math.round(Date.now() / 1000);
 
-        return this.request(`/api/s/${this._siteName}/stat/authorization`, {
+        const body = {
             start: timeframe,
             end: from
-        });
+        };
+
+        return this.request(`/api/s/${this._siteName}/stat/authorization`, body);
     }
 
     /**
      * Reconnect a client device
      *
      * @param mac MAC address of the client device to reconnect
-     * @throws HTTP 400 Exception if the MAC address is not known to the controller
      */
-    async reconnectClient(mac: string): Promise<any[]> {
-        return this.request(`/api/s/${this._siteName}/cmd/stamgr`, {
+    async reconnectClient(mac: string): Promise<void> {
+        const body = {
             cmd: "kick-sta",
             mac: mac
-        });
+        };
+
+        await this.request(`/api/s/${this._siteName}/cmd/stamgr`, body);
     }
 
     /**
@@ -135,11 +133,13 @@ export class UnifiController {
      *
      * @param mac MAC of client device to block
      */
-    async blockClient(mac: string): Promise<unifiTypes.ClientBlockedResponse[]> {
-        return this.request(`/api/s/${this._siteName}/cmd/stamgr`, {
+    async blockClient(mac: string): Promise<unifiTypes.ClientBlockedResponse> {
+        const body = {
             cmd: "block-sta",
             mac: mac
-        });
+        };
+        const response = this.request(`/api/s/${this._siteName}/cmd/stamgr`, body);
+        return response[0];
     }
 
     /**
@@ -147,20 +147,103 @@ export class UnifiController {
      *
      * @param mac MAC of client device to block
      */
-    async unblockClient(mac: string): Promise<unifiTypes.ClientBlockedResponse[]> {
-        return this.request(`/api/s/${this._siteName}/cmd/stamgr`, {
+    async unblockClient(mac: string): Promise<unifiTypes.ClientBlockedResponse> {
+        const body = {
             cmd: "unblock-sta",
             mac: mac
-        });
+        };
+
+        const response = await this.request(`/api/s/${this._siteName}/cmd/stamgr`, body);
+        return response[0];
+    }
+
+    /**
+     * Create an alias for a client.
+     *
+     * @param id Id of the client
+     * @param alias Alias name
+     */
+    async setClientAlias(id: string, alias: string): Promise<any> {
+        const body = {
+            name: alias
+        };
+
+        const response = await this.request(`/api/s/${this._siteName}/upd/user/${id}`, body);
+        return response[0];
+    }
+
+    /**
+     * Remove a client alias.
+     *
+     * @param id Id of the client
+     */
+    async removeClientAlias(id: string): Promise<unifiTypes.ClientBase> {
+        const body = {
+            name: null
+        };
+
+        const response = await this.request(`/api/s/${this._siteName}/upd/user/${id}`, body);
+        return response[0];
+    }
+
+    /**
+     * Set a client note.
+     *
+     * @param id Id of the client
+     * @param note Note
+     */
+    async setClientNote(id: string, note: string): Promise<unifiTypes.ClientBase> {
+        const body = {
+            note: note,
+            noted: true
+        };
+
+        const response = await this.request(`/api/s/${this._siteName}/upd/user/${id}`, body);
+        return response[0];
+    }
+
+    /**
+     * Remove a client note.
+     *
+     * @param id Id of the client
+     * @param note Note
+     */
+    async removeClientNote(id: string) {
+        const body = {
+            note: null,
+            noted: false
+        };
+
+        const response = await this.request(`/api/s/${this._siteName}/upd/user/${id}`, body);
+        return response[0];
+    }
+
+    /**
+     * List connected clients
+     */
+    async listClients(): Promise<unifiTypes.Client[]> {
+        return this.request(`/api/s/${this._siteName}/stat/sta`);
+    }
+
+    /**
+     * Get a single client's info
+     *
+     * @param mac MAC address of the client
+     */
+    async getClient(mac: string): Promise<unifiTypes.Client> {
+        const result = await this.request(`/api/s/${this._siteName}/stat/sta/${mac}`);
+        return result[0];
     }
 
     /**
      * NOT TESTED !!!!
      */
     async backup() {
-        return this.request(`/api/s/${this._siteName}/cmd/backup`, {
+        const body = {
             cmd: "backup"
-        });
+        };
+
+        return this.request(`/api/s/${this._siteName}/cmd/backup`, body);
     }
 
     /**
@@ -169,11 +252,10 @@ export class UnifiController {
      * @param quantity The number of vouchers to create
      * @param minutes How many minutes of uptime that will be included
      * @param [opts] Additional options
-     * @returns A promise with a timestamp for when the vouchers were created
      */
-    async createVouchers(quantity: number, minutes: number, opts?: unifiTypes.CreateVoucherOpts): Promise<unifiTypes.CreateVoucherResponse[]> {
+    async createVouchers(quantity: number, minutes: number, opts?: unifiTypes.CreateVoucherOpts): Promise<number> {
         if (quantity < 1) {
-            return Promise.resolve([]);
+            throw Error("Quatity must be greater than zero");
         }
 
         if (minutes < 1) {
@@ -191,7 +273,8 @@ export class UnifiController {
             n: quantity
         });
 
-        return this.request(`/api/s/${this._siteName}/cmd/hotspot`, body);
+        const response = await this.request(`/api/s/${this._siteName}/cmd/hotspot`, body) as unifiTypes.VoucherCreate;
+        return response[0] && response[0].create_time;
     }
 
     /**
@@ -199,10 +282,9 @@ export class UnifiController {
      * exact same timestamp on which the vouchers were created.
      *
      * @param timestamp The **exact** timestamp on which the desired vouchers were created on
-     * @returns A promise with an array of `Voucher`
      */
-    async getVouchers(timestamp?: number): Promise<unifiTypes.Voucher[]> {
-        const body = {} as any;
+    async listVouchers(timestamp?: number): Promise<unifiTypes.Voucher[]> {
+        const body = {} as unifiTypes.VoucherCreate;
 
         if (timestamp != null) {
             body.create_time = timestamp;
@@ -215,23 +297,26 @@ export class UnifiController {
      * Delete a voucher.
      *
      * @param voucherId The `_id` of the created `Voucher`
-     * @returns Always returns a Promise with an empty array
      */
-    async deleteVoucher(voucherId: string): Promise<any[]> {
-        return this.request(`/api/s/${this._siteName}/cmd/hotspot`, {
+    async deleteVoucher(voucherId: string) {
+        const body = {
             cmd: "delete-voucher",
             _id: voucherId
-        });
+        };
+
+        await this.request(`/api/s/${this._siteName}/cmd/hotspot`, body);
     }
 
     /**
      * NOT TESTED !!!!
      */
     async upgradeExternal(ap: string, firmwareUrl: string): Promise<any[]> {
-        return this.request(`/api/s/${this._siteName}/cmd/devmgr/upgrade-external`, {
+        const body = {
             mac: ap,
             url: firmwareUrl
-        });
+        };
+
+        return this.request(`/api/s/${this._siteName}/cmd/devmgr/upgrade-external`, body);
     }
 
     /**
@@ -239,23 +324,30 @@ export class UnifiController {
      * the result to only that AP.
      *
      * @param [ap] Access point MAC
-     * @returns A promise with an array of comprehensive device info
      */
-    async getDevices(ap?: string): Promise<unifiTypes.Device[]> {
+    async listDevices(ap?: string): Promise<unifiTypes.Device[]> {
         return this.request(`/api/s/${this._siteName}/stat/device/${ap || ""}`);
     }
 
     /**
      * Get controller system info
-     *
-     * @returns A promise with UniFi controller system information
      */
-    async getSystemInfo(): Promise<unifiTypes.SystemInfo[]> {
-        return this.request(`/api/s/${this._siteName}/stat/sysinfo`);
+    async getSystemInfo(): Promise<unifiTypes.SystemInfo> {
+        const response = this.request(`/api/s/${this._siteName}/stat/sysinfo`);
+        return response[0];
     }
 
     // ------------------------------------------------------------------------
 
+    /**
+     * Make a request to the UniFi controller API.
+     * Successful requests always return an array, regardless of the context and amount of data.
+     * So requests that expect a single value response comes in an array with 1 element and requests
+     * that does not have a response are returned as an empty array.
+     *
+     * @param uri The API endpoint
+     * @param body JSON body
+     */
     private request(uri:string, body?: any) {
         const opts = {
             method: "POST",

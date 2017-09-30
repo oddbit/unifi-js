@@ -20,11 +20,58 @@ export interface CreateVoucherOpts extends NetworkRestrictionOpts {
     quota: number
 }
 
-export interface CreateVoucherResponse {
+export interface VoucherCreate {
     create_time: number
 }
 
-export interface Client {
+export interface ClientBase {
+    _id: string,
+    first_seen: number,
+    hostname: string,
+    is_guest: boolean,
+    is_wired: boolean,
+    last_seen: number,
+    mac: string,
+    name?: string,
+    noted: boolean,
+    note?: string,
+    oui: string,
+    site_id: string
+}
+
+
+export interface Client extends ClientBase {
+    _is_guest_by_uap: boolean,
+    _last_seen_by_uap: number,
+    _uptime_by_uap: number,
+    ap_mac: string,
+    assoc_time: number,
+    bssid: string,
+    ccq: number,
+    channel: number,
+    essid: string,
+    idletime: number,
+    ip: string,
+    latest_assoc_time: number,
+    noise: number,
+    powersave_enabled: boolean,
+    qos_policy_applied: boolean,
+    radio: string,
+    radio_proto: string,
+    rssi: number,
+    rx_bytes: number,
+    rx_packets: number,
+    rx_rate: number,
+    signal: number,
+    tx_bytes: number,
+    tx_packets: number,
+    tx_power: number,
+    tx_rate: number,
+    uptime: number,
+    user_id: string
+}
+
+export interface Session {
     _id: string,
     ap_mac: string,
     authorized_by: string,
@@ -71,7 +118,7 @@ export interface SystemInfo {
     update_available: boolean,
     update_downloaded: boolean,
     version: string
-  }
+}
 
 
 export interface Voucher {
@@ -88,7 +135,7 @@ export interface Voucher {
     status: string,
     status_expires: number,
     used: number
-  }
+}
 
 export interface ClientBlockedResponse  {
     blocked: boolean,
@@ -97,6 +144,7 @@ export interface ClientBlockedResponse  {
 }
 
 export interface ClientAuthResponse {
+    _id: string,
     authorized_by: string,
     end: number,
     mac: string,
@@ -122,7 +170,8 @@ export interface RadioNg {
     radio: string
 }
 
-export interface Device                   {
+export interface Device {
+    _id: string,
     adopted: boolean,
     cfgversion: string,
     connect_request_ip: string,
