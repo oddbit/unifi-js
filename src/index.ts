@@ -111,7 +111,6 @@ export class UnifiController {
         timeframe = timeframe || 60 * 60 * 24 * 30;
         from = from || Math.round(Date.now() / 1000);
 
-        console.log(`timeframe = ${timeframe} from = ${from}`);
         return this.request(`/api/s/${this._siteName}/stat/authorization`, {
             start: timeframe,
             end: from
