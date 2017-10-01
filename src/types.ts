@@ -24,6 +24,16 @@ export interface VoucherCreate {
     create_time: number
 }
 
+export interface Site {
+    _id: string,
+    attr_hidden_id: string,
+    attr_no_delete: boolean,
+    desc: string,
+    name: string,
+    role: string
+}
+
+
 export interface ClientBase {
     _id: string,
     first_seen: number,

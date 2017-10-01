@@ -26,6 +26,11 @@ export class UnifiController {
         this._controllerUrl = `https://${host}:${port}`
     }
 
+    // ------------------------------------------------------------------------
+    //
+    // AUTH
+    //
+
     /**
      * Login to the UniFi controller
      *
@@ -42,7 +47,7 @@ export class UnifiController {
             "password": password
         };
 
-        await this.request("/api/login", body);
+        await this.post("/api/login", body);
         this._isLoggedIn = true;
     }
 
@@ -54,9 +59,142 @@ export class UnifiController {
             return;
         }
 
-        await this.request("/api/logout");
+        await this.post("/api/logout");
         this._isLoggedIn = false;
     }
+
+    // ------------------------------------------------------------------------
+    //
+    // CLIENTS / STA / DEVICES
+    //
+
+
+    /**
+     * Reconnect a client device
+     *
+     * @param mac MAC address of the client device to reconnect
+     */
+    async reconnectClient(mac: string): Promise<void> {
+        const body = {
+            cmd: "kick-sta",
+            mac: mac
+        };
+
+        await this.post(`/api/s/${this._siteName}/cmd/stamgr`, body);
+    }
+
+    /**
+     * Block a client device
+     *
+     * @param mac MAC of client device to block
+     */
+    async blockClient(mac: string): Promise<unifiTypes.ClientBlockedResponse> {
+        const body = {
+            cmd: "block-sta",
+            mac: mac
+        };
+        const response = this.post(`/api/s/${this._siteName}/cmd/stamgr`, body);
+        return response[0];
+    }
+
+    /**
+     * Unblock a client device
+     *
+     * @param mac MAC of client device to block
+     */
+    async unblockClient(mac: string): Promise<unifiTypes.ClientBlockedResponse> {
+        const body = {
+            cmd: "unblock-sta",
+            mac: mac
+        };
+
+        const response = await this.post(`/api/s/${this._siteName}/cmd/stamgr`, body);
+        return response[0];
+    }
+
+    /**
+     * Create an alias for a client.
+     *
+     * @param id Id of the client
+     * @param alias Alias name
+     */
+    async setClientAlias(id: string, alias: string): Promise<any> {
+        const body = {
+            name: alias
+        };
+
+        const response = await this.post(`/api/s/${this._siteName}/upd/user/${id}`, body);
+        return response[0];
+    }
+
+    /**
+     * Remove a client alias.
+     *
+     * @param id Id of the client
+     */
+    async removeClientAlias(id: string): Promise<unifiTypes.ClientBase> {
+        const body = {
+            name: null
+        };
+
+        const response = await this.post(`/api/s/${this._siteName}/upd/user/${id}`, body);
+        return response[0];
+    }
+
+    /**
+     * Set a client note.
+     *
+     * @param id Id of the client
+     * @param note Note
+     */
+    async setClientNote(id: string, note: string): Promise<unifiTypes.ClientBase> {
+        const body = {
+            note: note,
+            noted: true
+        };
+
+        const response = await this.post(`/api/s/${this._siteName}/upd/user/${id}`, body);
+        return response[0];
+    }
+
+    /**
+     * Remove a client note.
+     *
+     * @param id Id of the client
+     * @param note Note
+     */
+    async removeClientNote(id: string) {
+        const body = {
+            note: null,
+            noted: false
+        };
+
+        const response = await this.post(`/api/s/${this._siteName}/upd/user/${id}`, body);
+        return response[0];
+    }
+
+    /**
+     * List connected clients
+     */
+    async listClients(): Promise<unifiTypes.Client[]> {
+        return this.post(`/api/s/${this._siteName}/stat/sta`);
+    }
+
+    /**
+     * Get a single client's info
+     *
+     * @param mac MAC address of the client
+     */
+    async getClient(mac: string): Promise<unifiTypes.Client> {
+        const result = await this.post(`/api/s/${this._siteName}/stat/sta/${mac}`);
+        return result[0];
+    }
+
+
+    // ------------------------------------------------------------------------
+    //
+    // HOTSPOT / GUESTS / VOUCHERS
+    //
 
     /**
      * Authorize a client device to connect through the hotspot.
@@ -78,7 +216,7 @@ export class UnifiController {
             ap_mac: ap
         });
 
-        const response = await this.request(`/api/s/${this._siteName}/cmd/stamgr`, body);
+        const response = await this.post(`/api/s/${this._siteName}/cmd/stamgr`, body);
         return response[0];
     }
 
@@ -93,157 +231,7 @@ export class UnifiController {
             mac: mac
         };
 
-        await this.request(`/api/s/${this._siteName}/cmd/stamgr`, body);
-    }
-
-    /**
-     * List known sessions during a certain period of time. Default is to show the last month's sessions.
-     *
-     * @param [timeframe] The window of time (in seconds) to limit results by (default is 30 days)
-     * @param [from] Alternative start time from where to list devices (default is "now")
-     */
-    async listSessions(timeframe?: number, from?: number): Promise<unifiTypes.Session[]> {
-        timeframe = timeframe || 60 * 60 * 24 * 30;
-        from = from || Math.round(Date.now() / 1000);
-
-        const body = {
-            start: timeframe,
-            end: from
-        };
-
-        return this.request(`/api/s/${this._siteName}/stat/authorization`, body);
-    }
-
-    /**
-     * Reconnect a client device
-     *
-     * @param mac MAC address of the client device to reconnect
-     */
-    async reconnectClient(mac: string): Promise<void> {
-        const body = {
-            cmd: "kick-sta",
-            mac: mac
-        };
-
-        await this.request(`/api/s/${this._siteName}/cmd/stamgr`, body);
-    }
-
-    /**
-     * Block a client device
-     *
-     * @param mac MAC of client device to block
-     */
-    async blockClient(mac: string): Promise<unifiTypes.ClientBlockedResponse> {
-        const body = {
-            cmd: "block-sta",
-            mac: mac
-        };
-        const response = this.request(`/api/s/${this._siteName}/cmd/stamgr`, body);
-        return response[0];
-    }
-
-    /**
-     * Unblock a client device
-     *
-     * @param mac MAC of client device to block
-     */
-    async unblockClient(mac: string): Promise<unifiTypes.ClientBlockedResponse> {
-        const body = {
-            cmd: "unblock-sta",
-            mac: mac
-        };
-
-        const response = await this.request(`/api/s/${this._siteName}/cmd/stamgr`, body);
-        return response[0];
-    }
-
-    /**
-     * Create an alias for a client.
-     *
-     * @param id Id of the client
-     * @param alias Alias name
-     */
-    async setClientAlias(id: string, alias: string): Promise<any> {
-        const body = {
-            name: alias
-        };
-
-        const response = await this.request(`/api/s/${this._siteName}/upd/user/${id}`, body);
-        return response[0];
-    }
-
-    /**
-     * Remove a client alias.
-     *
-     * @param id Id of the client
-     */
-    async removeClientAlias(id: string): Promise<unifiTypes.ClientBase> {
-        const body = {
-            name: null
-        };
-
-        const response = await this.request(`/api/s/${this._siteName}/upd/user/${id}`, body);
-        return response[0];
-    }
-
-    /**
-     * Set a client note.
-     *
-     * @param id Id of the client
-     * @param note Note
-     */
-    async setClientNote(id: string, note: string): Promise<unifiTypes.ClientBase> {
-        const body = {
-            note: note,
-            noted: true
-        };
-
-        const response = await this.request(`/api/s/${this._siteName}/upd/user/${id}`, body);
-        return response[0];
-    }
-
-    /**
-     * Remove a client note.
-     *
-     * @param id Id of the client
-     * @param note Note
-     */
-    async removeClientNote(id: string) {
-        const body = {
-            note: null,
-            noted: false
-        };
-
-        const response = await this.request(`/api/s/${this._siteName}/upd/user/${id}`, body);
-        return response[0];
-    }
-
-    /**
-     * List connected clients
-     */
-    async listClients(): Promise<unifiTypes.Client[]> {
-        return this.request(`/api/s/${this._siteName}/stat/sta`);
-    }
-
-    /**
-     * Get a single client's info
-     *
-     * @param mac MAC address of the client
-     */
-    async getClient(mac: string): Promise<unifiTypes.Client> {
-        const result = await this.request(`/api/s/${this._siteName}/stat/sta/${mac}`);
-        return result[0];
-    }
-
-    /**
-     * NOT TESTED !!!!
-     */
-    async backup() {
-        const body = {
-            cmd: "backup"
-        };
-
-        return this.request(`/api/s/${this._siteName}/cmd/backup`, body);
+        await this.post(`/api/s/${this._siteName}/cmd/stamgr`, body);
     }
 
     /**
@@ -273,7 +261,7 @@ export class UnifiController {
             n: quantity
         });
 
-        const response = await this.request(`/api/s/${this._siteName}/cmd/hotspot`, body) as unifiTypes.VoucherCreate;
+        const response = await this.post(`/api/s/${this._siteName}/cmd/hotspot`, body) as unifiTypes.VoucherCreate;
         return response[0] && response[0].create_time;
     }
 
@@ -290,7 +278,7 @@ export class UnifiController {
             body.create_time = timestamp;
         }
 
-        return this.request(`/api/s/${this._siteName}/stat/voucher`, body);
+        return this.post(`/api/s/${this._siteName}/stat/voucher`, body);
     }
 
     /**
@@ -304,7 +292,59 @@ export class UnifiController {
             _id: voucherId
         };
 
-        await this.request(`/api/s/${this._siteName}/cmd/hotspot`, body);
+        await this.post(`/api/s/${this._siteName}/cmd/hotspot`, body);
+    }
+
+    // ------------------------------------------------------------------------
+    //
+    // SYSTEM / INFORMATION
+    //
+
+    /**
+     * List known sessions during a certain period of time. Default is to show the last month's sessions.
+     *
+     * @param [timeframe] The window of time (in seconds) to limit results by (default is 30 days)
+     * @param [from] Alternative start time from where to list devices (default is "now")
+     */
+    async listSessions(timeframe?: number, from?: number): Promise<unifiTypes.Session[]> {
+        timeframe = timeframe || 60 * 60 * 24 * 30;
+        from = from || Math.round(Date.now() / 1000);
+
+        const body = {
+            start: timeframe,
+            end: from
+        };
+
+        return this.post(`/api/s/${this._siteName}/stat/authorization`, body);
+    }
+
+    /**
+     * List sites that are configured on the controller
+     */
+    async listSites(): Promise<unifiTypes.Site[]> {
+        return this.get(`/api/self/sites`);
+    }
+
+    /**
+     * Get device info for one or all access points. Specifying an access point's MAC will limit
+     * the result to only that AP.
+     *
+     * @param [ap] Access point MAC
+     */
+    async listDevices(ap?: string): Promise<unifiTypes.Device[]> {
+        return this.post(`/api/s/${this._siteName}/stat/device/${ap || ""}`);
+    }
+
+
+    /**
+     * NOT TESTED !!!!
+     */
+    async backup() {
+        const body = {
+            cmd: "backup"
+        };
+
+        return this.post(`/api/s/${this._siteName}/cmd/backup`, body);
     }
 
     /**
@@ -316,28 +356,26 @@ export class UnifiController {
             url: firmwareUrl
         };
 
-        return this.request(`/api/s/${this._siteName}/cmd/devmgr/upgrade-external`, body);
-    }
-
-    /**
-     * Get device info for one or all access points. Specifying an access point's MAC will limit
-     * the result to only that AP.
-     *
-     * @param [ap] Access point MAC
-     */
-    async listDevices(ap?: string): Promise<unifiTypes.Device[]> {
-        return this.request(`/api/s/${this._siteName}/stat/device/${ap || ""}`);
+        return this.post(`/api/s/${this._siteName}/cmd/devmgr/upgrade-external`, body);
     }
 
     /**
      * Get controller system info
      */
     async getSystemInfo(): Promise<unifiTypes.SystemInfo> {
-        const response = this.request(`/api/s/${this._siteName}/stat/sysinfo`);
+        const response = this.post(`/api/s/${this._siteName}/stat/sysinfo`);
         return response[0];
     }
 
     // ------------------------------------------------------------------------
+
+    private get(uri: string) {
+        return this.request("GET", uri);
+    }
+
+    private post(uri: string, body?: any) {
+        return this.request("POST", uri, body);
+    }
 
     /**
      * Make a request to the UniFi controller API.
@@ -348,9 +386,9 @@ export class UnifiController {
      * @param uri The API endpoint
      * @param body JSON body
      */
-    private request(uri:string, body?: any) {
+    private request(method: string, uri:string, body?: any) {
         const opts = {
-            method: "POST",
+            method: method,
             uri: this._controllerUrl + uri,
             resolveWithFullResponse: true,
             jar: this._cookieJar,

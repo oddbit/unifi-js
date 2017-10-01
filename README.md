@@ -30,7 +30,9 @@ The following actions are supported.
     - Delete vouchers
 - System
     - Get UniFi controller system info
+    - List sites
     - List access points with device info
+    - List sessions
     - Backup
     - Upgrade firmware
 
