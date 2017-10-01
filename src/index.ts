@@ -4,8 +4,6 @@ import * as tough from "tough-cookie";
 import * as cookieParser from "set-cookie-parser";
 import * as unifiTypes from "./types";
 
-
-
 export class UnifiController {
 
     private _cookieJar : CookieJar;
@@ -93,7 +91,7 @@ export class UnifiController {
             cmd: "block-sta",
             mac: mac
         };
-        const response = this.post(`/api/s/${this._siteName}/cmd/stamgr`, body);
+        const response = await this.post(`/api/s/${this._siteName}/cmd/stamgr`, body);
         return response[0];
     }
 
@@ -261,7 +259,7 @@ export class UnifiController {
             n: quantity
         });
 
-        const response = await this.post(`/api/s/${this._siteName}/cmd/hotspot`, body) as unifiTypes.VoucherCreate;
+        const response = await this.post(`/api/s/${this._siteName}/cmd/hotspot`, body);
         return response[0] && response[0].create_time;
     }
 
@@ -356,7 +354,7 @@ export class UnifiController {
      * Get controller system info
      */
     async getSystemInfo(): Promise<unifiTypes.SystemInfo> {
-        const response = this.post(`/api/s/${this._siteName}/stat/sysinfo`);
+        const response = await this.post(`/api/s/${this._siteName}/stat/sysinfo`);
         return response[0];
     }
 
