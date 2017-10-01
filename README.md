@@ -33,8 +33,6 @@ The following actions are supported.
     - List sites
     - List access points with device info
     - List sessions
-    - Backup
-    - Upgrade firmware
 
 ## How to use it
 

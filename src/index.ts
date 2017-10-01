@@ -335,30 +335,6 @@ export class UnifiController {
         return this.post(`/api/s/${this._siteName}/stat/device/${ap || ""}`);
     }
 
-
-    /**
-     * NOT TESTED !!!!
-     */
-    async backup() {
-        const body = {
-            cmd: "backup"
-        };
-
-        return this.post(`/api/s/${this._siteName}/cmd/backup`, body);
-    }
-
-    /**
-     * NOT TESTED !!!!
-     */
-    async upgradeExternal(ap: string, firmwareUrl: string): Promise<any[]> {
-        const body = {
-            mac: ap,
-            url: firmwareUrl
-        };
-
-        return this.post(`/api/s/${this._siteName}/cmd/devmgr/upgrade-external`, body);
-    }
-
     /**
      * Get controller system info
      */
