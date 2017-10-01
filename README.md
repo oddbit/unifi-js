@@ -51,13 +51,32 @@ const controller = new unifi.UnifiController({
 });
 
 await controller.login("admin", "secretPassword");
+// ...
+// Work with the controller
+// ...
 await controller.logout();
 ```
+
+### Discovering controller information
+In some cases it can be good to first look up information about the site and update configuration accordingly.
+This is a sample of fetching the site names and setting to a non-default value
+
+```typescript
+const sites = await controller.listSites();
+sites.forEach(site => {
+    if (site.name !== "default") {
+        controller.setSite(site.name);
+    }
+})
+```
+
 
 ### Authorizing a guest to connect through the hotspot
 The first parameter is the MAC of the connecting device. This is captured by the hotspot and passed to your portal page in the page redirection.
 
 ```typescript
-await controller.authorizeGuest("00:11:22:33:44:55", "66:77:88:99:aa:bb");
+const clientMac = "00:11:22:33:44:55";
+const accessPointMac = "66:77:88:99:aa:bb";
+const authResponse = await controller.authorizeGuest(clientMac, accessPointMac);
 ```
 
