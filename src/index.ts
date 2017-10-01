@@ -326,6 +326,23 @@ export class UnifiController {
     }
 
     /**
+     * Get the name of the site that is targeted in API calls.
+     */
+    getSite(): string {
+        return this._siteName;
+    }
+
+    /**
+     * Change the active site to target in API calls. This can be useful if site information was not known before
+     * retreiving site information in a call to `listSites()`.
+     *
+     * @param siteName Name of the site
+     */
+    setSite(siteName: string) {
+        this._siteName = siteName || "default";
+    }
+
+    /**
      * Get device info for one or all access points. Specifying an access point's MAC will limit
      * the result to only that AP.
      *
