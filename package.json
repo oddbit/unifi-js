@@ -1,6 +1,6 @@
 {
   "name": "@oddbit/unifi",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Unifi API client library",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",

@@ -115,7 +115,7 @@ export class UnifiController {
      * @param id Id of the client
      * @param alias Alias name
      */
-    async setClientAlias(id: string, alias: string): Promise<any> {
+    async setClientAlias(id: string, alias: string): Promise<unifiTypes.ClientBase> {
         const body = {
             name: alias
         };
@@ -160,7 +160,7 @@ export class UnifiController {
      * @param id Id of the client
      * @param note Note
      */
-    async removeClientNote(id: string) {
+    async removeClientNote(id: string): Promise<unifiTypes.ClientBase> {
         const body = {
             note: null,
             noted: false
@@ -222,7 +222,7 @@ export class UnifiController {
      *
      * @param mac MAC address of the client device
      */
-    async unauthorizeGuest(mac: string) {
+    async unauthorizeGuest(mac: string): Promise<void> {
         const body = {
             cmd: "unauthorize-guest",
             mac: mac
