@@ -8,7 +8,8 @@ export class UnifiController {
 
     private _cookieJar : CookieJar;
     private _isLoggedIn: boolean;
-    private _controllerUrl: string;
+    private _host: string;
+    private _port: number;
     private _isSelfSigned: boolean;
     private _siteName: string;
 
@@ -18,10 +19,8 @@ export class UnifiController {
         this._isSelfSigned = !!config.isSelfSigned;
         this._siteName = config.siteName || "default";
 
-        const host = config.host || "localhost";
-        const port = config.port || 8443;
-
-        this._controllerUrl = `https://${host}:${port}`
+        this._host = config.host || "localhost";
+        this._port = config.port || 8443;
     }
 
     // ------------------------------------------------------------------------
@@ -380,7 +379,7 @@ export class UnifiController {
     private request(method: string, uri:string, body?: any) {
         const opts = {
             method: method,
-            uri: this._controllerUrl + uri,
+            uri: `https://${this._host}:${this._port}${uri}`,
             resolveWithFullResponse: true,
             jar: this._cookieJar,
             json: true,
@@ -396,7 +395,7 @@ export class UnifiController {
         return rp(opts)
             .then((response) => {
                 cookieParser.parse(response).forEach(cookie => {
-                    this._cookieJar.setCookie(new tough.Cookie(cookie) as any, this._controllerUrl);
+                    this._cookieJar.setCookie(new tough.Cookie(cookie) as any, this._host);
                 });
 
                 return (response.body && response.body.data) || [];
